@@ -72,7 +72,7 @@ export default async function handler(
     return;
   }
 
-  const db = mongo.db("antius");
+  const db = (await mongo).db("antius");
   const users = db.collection("users");
 
   const user = await users.findOne({
