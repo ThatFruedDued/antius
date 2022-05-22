@@ -22,7 +22,9 @@ export default async function handler(
   const users = db.collection("users");
   const { username } = req.body as { username: string };
 
-  const user = await users.findOne({ username: new RegExp(username, "gi") });
+  const user = await users.findOne({
+    username: new RegExp(`^${username}$`, "gi"),
+  });
 
   if (!user) {
     res.status(404).send({
@@ -41,22 +43,28 @@ export default async function handler(
     return;
   }
 
+  const posts = db.collection("posts");
+  const usersPosts = await posts.find({ poster: user.username }).toArray();
+
+  const postResArray = [];
+
+  for (const post of usersPosts) {
+    const comments = db.collection("comments");
+    const postComments = await comments.find({ postId: post._id }).toArray();
+    postResArray.push({
+      dateCreated: post.createdAt.getTime(),
+      content: post.content,
+      id: post._id.toString(),
+      comments: postComments.map((comment) => ({
+        dateCreated: comment.createdAt.getTime(),
+        content: comment.content,
+        creator: comment.creator,
+      })),
+    });
+  }
+
   res.send({
     success: true,
-    posts: user.posts.map(
-      (post: {
-        dateCreated: Date;
-        content: string;
-        comments: { creator: string; content: string; dateCreated: Date }[];
-      }) => ({
-        dateCreated: post.dateCreated.getTime(),
-        content: post.content,
-        comments: post.comments.map((comment) => ({
-          creator: comment.creator,
-          content: comment.content,
-          dateCreated: comment.dateCreated.getTime(),
-        })),
-      })
-    ),
+    posts: postResArray,
   });
 }

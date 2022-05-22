@@ -1,27 +1,21 @@
 import { LoadingButton } from "@mui/lab";
-import { Button, Stack, TextField, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Stack, Typography, TextField } from "@mui/material";
 import { NextPage } from "next";
 import Head from "next/head";
-import { useRouter } from "next/router";
+import router from "next/router";
 import { useState } from "react";
 
-const SignUp: NextPage = () => {
+const SignIn: NextPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [signUpLoading, setSignUpLoading] = useState(false);
-  const [errorType, setErrorType] = useState<
-    "" | "username" | "password" | "confirmPassword"
-  >("");
+  const [errorType, setErrorType] = useState<"" | "username" | "password">("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  const router = useRouter();
+  const [signInLoading, setSignInLoading] = useState(false);
 
   return (
     <>
       <Head>
-        <title>Antius | Sign Up</title>
+        <title>Antius | Sign In</title>
       </Head>
       <Box
         display="flex"
@@ -32,7 +26,7 @@ const SignUp: NextPage = () => {
       >
         <Stack spacing={2}>
           <Typography variant="h1" sx={{ mb: 3 }}>
-            Sign Up
+            Sign In
           </Typography>
           <TextField
             label="Username"
@@ -48,7 +42,7 @@ const SignUp: NextPage = () => {
             }}
           />
           <TextField
-            label="Create a Password"
+            label="Password"
             variant="filled"
             type="password"
             onChange={(e) => {
@@ -61,32 +55,12 @@ const SignUp: NextPage = () => {
               maxLength: 64,
             }}
           />
-          <TextField
-            label="Confirm Password"
-            variant="filled"
-            type="password"
-            onChange={(e) => {
-              setConfirmPassword(e.target.value);
-              errorType === "confirmPassword" && setErrorType("");
-            }}
-            error={errorType === "confirmPassword"}
-            helperText={errorType === "confirmPassword" ? errorMessage : ""}
-            inputProps={{
-              maxLength: 64,
-            }}
-          />
           <LoadingButton
             variant="contained"
-            loading={signUpLoading}
+            loading={signInLoading}
             onClick={async () => {
-              setSignUpLoading(true);
-              if (password !== confirmPassword) {
-                setErrorType("confirmPassword");
-                setErrorMessage("Passwords do not match");
-                setSignUpLoading(false);
-                return;
-              }
-              const res = await fetch("/api/signUp", {
+              setSignInLoading(true);
+              const res = await fetch("/api/signIn", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -108,11 +82,11 @@ const SignUp: NextPage = () => {
               } else {
                 setErrorType(data.errorType ?? "username");
                 setErrorMessage(data.errorMessage ?? "Unknown error");
-                setSignUpLoading(false);
+                setSignInLoading(false);
               }
             }}
           >
-            Sign Up
+            Sign In
           </LoadingButton>
         </Stack>
       </Box>
@@ -120,4 +94,4 @@ const SignUp: NextPage = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;

@@ -89,7 +89,7 @@ export default async function handler(
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  await users.insertOne({ username, password: hashedPassword, posts: [] });
+  await users.insertOne({ username, password: hashedPassword });
 
   const createdUser = await users.findOne({ username });
 

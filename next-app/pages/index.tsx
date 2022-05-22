@@ -2,8 +2,20 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import useToken from "../hooks/useToken";
 
 const Home: NextPage = () => {
+  const [isLoggedIn] = useToken();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.replace("/home");
+    }
+  }, [isLoggedIn, router]);
+
   return (
     <>
       <Head>
